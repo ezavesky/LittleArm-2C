@@ -5,7 +5,7 @@
 #include <Servo.h>  //arduino library
 #include <math.h>   //standard c library
 
-#define PI 3.141
+//#define PI 3.141
 
 Servo baseServo;  
 Servo shoulderServo;  
@@ -62,13 +62,16 @@ void loop()
     desiredAngle.elbow = Serial.parseInt();
     desiredGrip = Serial.parseInt();
     desiredDelay = Serial.parseInt();
+    Serial.print(String(desiredAngle.base)+","+String(desiredAngle.shoulder)+","+String(desiredAngle.elbow)+","+String(desiredGrip)+","+String(desiredDelay)+",go\n");
 
     if(Serial.read() == '\n'){              // if the last byte is '\n' then stop reading and execute command '\n' stands for 'done'
         Serial.flush();                     //clear all other commands piled in the buffer
-        Serial.print('d');                  //send completion of the command "d" stands for "done executing"
+        Serial.print("d\n");                  //send completion of the command "d" stands for "done executing"
     }
+    read_positions();
   }
 
+  
   // These values are the status of whether or not the joint has reached its position yet
   // variables declared inside of some part of the program, like these, are called "local Variables"
   int status1 = 0;  //base status
@@ -89,10 +92,20 @@ void loop()
     // Check whether all the joints have reached their positions
     if (status1 == 1 & status2 == 1 & status3 == 1 & status4 == 1){
       done = 1; //When done =1 then the loop will stop
+      //read_positions();
     }   
        
   }// end of while
 }
+
+void read_positions() {
+  Serial.print(String(baseServo.read()) + ","
+    + String(shoulderServo.read()) + ","
+    + String(elbowServo.read()) + "," 
+    + String(gripperServo.read()) + "," 
+    + "now\n");
+}
+
 
 //++++++++++++++++++++++++++++++FUNCTION DEFINITIONS++++++++++++++++++++++++++++++++++++++++++
 
